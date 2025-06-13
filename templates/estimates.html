@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Estimates</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <h2>Previous Estimates</h2>
+    {% for estimate in estimates %}
+        <div>
+            <h3>{{ estimate.project_name }} ({{ estimate.created_at }})</h3>
+            <p>Country: {{ estimate.country }}</p>
+            <p>Time Frame: {{ estimate.time_frame_days }} days</p>
+            <p>Total Cost: £{{ estimate.estimates|tojson|safe }}</p>
+        </div>
+    {% endfor %}
+    <a href="/">Back to Home</a>
+</body>
+</html>

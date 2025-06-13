@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>2CM SmartBuild</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="{{ body_class }}">
+    <img id="logo" src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" class="{{ body_class }}">
+    {% if body_class == 'logged-in' %}
+        <a href="{{ url_for('logout') }}">Logout</a>
+    {% else %}
+        <a href="{{ url_for('login') }}">Login</a> | <a href="{{ url_for('register') }}">Register</a>
+    {% endif %}
+    <h1>2CM SmartBuild</h1>
+    <form method="POST">
+        <div class="form-group">
+            <label>Project Name: </label>
+            <input type="text" name="project_name" required>
+        </div>
+        <div class="form-group">
+            <label>Time Frame (days): </label>
+            <input type="number" name="time_frame" step="0.1" min="0" required>
+        </div>
+        {% for element in elements %}
+            <div class="form-group">
+                <label>{{ element.Element }} ({{ element.Unit }}):</label>
+                <input type="number" name="quantity_{{ element.Element }}" step="0.1" min="0">
+                <input type="number" name="people_{{ element.Element }}" min="1" placeholder="People">
+            </div>
+        {% endfor %}
+        <button type="submit">Calculate</button>
+    </form>
+    {% if project_name %}
+        <h2>Project: {{ project_name }}</h2>
+        <p>Time Frame: {{ time_frame }} days</p>
+        <p id="maxSimultaneousWorkers">Max Simultaneous Workers: {{ max_workers }}</p>
+        <table>
+            <tr>
+                <th>Element</th>
+                <th>Unit</th>
+                <th>Quantity</th>
+                <th>People</th>
+                <th>Allocated Days</th>
+                <th>Cost</th>
+            </tr>
+            {% for element in elements %}
+                <tr>
+                    <td>{{ element.Element }}</td>
+                    <td>{{ element.Unit }}</td>
+                    <td>{{ element.Quantity }}</td>
+                    <td>{{ element.People }}</td>
+                    <td>{{ element.Allocated_Days | round(2) }}</td>
+                    <td>{{ element.Cost | round(2) }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+        {% if body_class == 'logged-in' %}
+            <a href="{{ url_for('download_pdf') }}">Download PDF</a>
+            <form id="progressForm" method="POST" action="{{ url_for('update_progress') }}">
+                <div id="progressInputs">
+                    {% for element in elements %}
+                        <div class="form-group">
+                            <label>Progress for {{ element.Element }} (days):</label>
+                            <input type="number" name="progress_{{ element.Element }}" step="0.1" min="0">
+                        </div>
+                    {% endfor %}
+                </div>
+                <button type="submit">Update Progress</button>
+            </form>
+        {% endif %}
+    {% endif %}
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
